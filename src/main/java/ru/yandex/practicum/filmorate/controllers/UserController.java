@@ -29,33 +29,26 @@ public class UserController {
         if (user.getName().isBlank()) {
             user.setName(user.getLogin());
         }
-        try {
-            for (User i : users) {
-                if (i.getEmail().equals(user.getEmail())) {
-                    throw new ValidationException("Пользователь с таким электронным адресом уже зарегестрирован");
-                }
+        for (User i : users) {
+            if (i.getEmail().equals(user.getEmail())) {
+                throw new ValidationException("Пользователь с таким электронным адресом уже зарегестрирован");
             }
-            id++;
-            user.setId(id);
-            users.add(user);
-        } catch (ValidationException e) {
-            throw new RuntimeException(e);
         }
+        id++;
+        user.setId(id);
+        users.add(user);
+
         return user;
     }
 
     @PutMapping
     public User updateUser(@Valid @RequestBody User user) {
-        try {
-            for (User i : users) {
-                if (i.getId() == user.getId()) {
-                    users.remove(i);
-                } else {
-                    throw new ValidationException("Пользователя с таким id нет");
-                }
+        for (User i : users) {
+            if (i.getId() == user.getId()) {
+                users.remove(i);
+            } else {
+                throw new ValidationException("Пользователя с таким id нет");
             }
-        } catch (ValidationException e) {
-            throw new RuntimeException(e);
         }
         users.add(user);
         return user;

@@ -15,6 +15,8 @@ import java.util.Set;
 @RequestMapping("/films")
 public class FilmController {
 
+    private static final LocalDate FIRST_FILM = LocalDate.of(1895, 12, 25);
+
     private int id;
     private final Set<Film> films = new HashSet<>();
 
@@ -28,9 +30,7 @@ public class FilmController {
         if (film.getId() < 0) {
             throw new ValidationException("id не может быть отрицательным");
         }
-        if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 25))) {
-            throw new ValidationException("Поле <Дата релиза> должно быть позже 28.12.1895");
-        }
+        checkDate(film);
         id++;
         film.setId(id);
         films.add(film);
@@ -39,21 +39,21 @@ public class FilmController {
 
     @PutMapping
     public Film updateFilm(@Valid @RequestBody Film film) {
-        try {
-            for (Film i : films) {
-                if (i.getId() == film.getId()) {
-                    films.remove(i);
-                } else {
-                    throw new ValidationException("Фильма с таким id нет");
-                }
+        for (Film i : films) {
+            if (i.getId() == film.getId()) {
+                films.remove(i);
+            } else {
+                throw new ValidationException("Фильма с таким id нет");
             }
-            if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 25))) {
-                throw new ValidationException("Поле <Дата релиза> должно быть позже 28.12.1895");
-            }
-            films.add(film);
-        } catch (ValidationException e) {
-            throw new RuntimeException(e);
         }
+        checkDate(film);
+        films.add(film);
         return film;
+    }
+
+    private void checkDate(Film film) {
+        if (film.getReleaseDate().isBefore(FIRST_FILM)) {
+            throw new ValidationException("Поле <Дата релиза> должно быть позже 28.12.1895");
+        }
     }
 }

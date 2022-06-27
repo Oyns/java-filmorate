@@ -7,6 +7,7 @@ import ru.yandex.practicum.filmorate.model.User;
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class UserControllerTest {
 
@@ -61,20 +62,16 @@ class UserControllerTest {
 
     @Test
     void shouldCheckCreateUserWithNegativeId() {
-       try {
-           User user = new User();
-           user.setId(-1);
-           user.setName("");
-           user.setName("");
-           user.setEmail("boba@yandex.ru");
-           user.setLogin("Oppo");
-           user.setBirthday(LocalDate.of(1988, 5, 28));
-           UserController userController = new UserController();
-           userController.createUser(user);
-       } catch (ValidationException e) {
-           final String expected = "id не может быть отрицательным";
-           assertEquals(expected, e.getMessage());
-       }
+        User user = new User();
+        user.setId(-1);
+        user.setName("");
+        user.setName("");
+        user.setEmail("boba@yandex.ru");
+        user.setLogin("Oppo");
+        user.setBirthday(LocalDate.of(1988, 5, 28));
+        UserController userController = new UserController();
+
+        assertThrows(ValidationException.class, () -> userController.createUser(user));
     }
 
     @Test

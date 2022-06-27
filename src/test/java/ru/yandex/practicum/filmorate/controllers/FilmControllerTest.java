@@ -7,6 +7,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class FilmControllerTest {
 
@@ -61,33 +62,15 @@ class FilmControllerTest {
 
     @Test
     void shouldCheckReleaseFilmDate() {
-        try {
-            Film film = new Film();
-            film.setId(1);
-            film.setName("Titanic");
-            film.setDescription("great movie");
-            film.setDuration(180);
-            film.setReleaseDate(LocalDate.of(1800, 5, 28));
-            FilmController filmController = new FilmController();
-            filmController.postFilm(film);
-        } catch (ValidationException e) {
-            assertEquals("Поле <Дата релиза> должно быть позже 28.12.1895", e.getMessage());
-        }
-    }
 
-    @Test
-    void shouldCheckNegativeDuration() {
-        try {
-            Film film = new Film();
-            film.setId(1);
-            film.setName("Titanic");
-            film.setDescription("great movie");
-            film.setDuration(-180);
-            film.setReleaseDate(LocalDate.of(2000, 5, 28));
-            FilmController filmController = new FilmController();
-            filmController.postFilm(film);
-        } catch (ValidationException e) {
-            assertEquals("Продолжительность фильма должна быть положительной", e.getMessage());
-        }
+        Film film = new Film();
+        film.setId(1);
+        film.setName("Titanic");
+        film.setDescription("great movie");
+        film.setDuration(180);
+        film.setReleaseDate(LocalDate.of(1800, 5, 28));
+        FilmController filmController = new FilmController();
+
+        assertThrows(ValidationException.class, () -> filmController.postFilm(film));
     }
 }
