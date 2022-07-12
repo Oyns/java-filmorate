@@ -24,7 +24,7 @@ public class FilmService {
     }
 
     public Film getFilmData(String id) {
-        negativeId(id);
+        checkId(id);
         return filmStorage.getAllFilms().stream()
                 .filter(film -> film.getId() == Integer.parseInt(id))
                 .findAny()
@@ -32,10 +32,10 @@ public class FilmService {
     }
 
 
-    public void userLikesFilm(String id, String userId) {
-        for (Film i : filmStorage.getAllFilms()) {
-            if (i.getId() == Integer.parseInt(id)) {
-                i.getLikes().add(Long.valueOf(userId));
+    public void userMakesLike(String id, String userId) {
+        for (Film film : filmStorage.getAllFilms()) {
+            if (film.getId() == Integer.parseInt(id)) {
+                film.getLikes().add(Long.valueOf(userId));
             }
         }
     }
@@ -44,20 +44,20 @@ public class FilmService {
         List<Film> topRated = new ArrayList<>();
         int bestFilm = 0;
         if (count != null) {
-            for (Film i : filmStorage.getAllFilms()) {
-                topRated.add(i);
+            for (Film film : filmStorage.getAllFilms()) {
+                topRated.add(film);
                 topRated.sort(new CompareFilms());
                 if (topRated.size() > Integer.parseInt(count)) {
-                    for (int j = topRated.size(); j > Integer.parseInt(count); j--) {
-                        topRated.remove(j - 1);
+                    for (int i = topRated.size(); i > Integer.parseInt(count); i--) {
+                        topRated.remove(i - 1);
                     }
                 }
             }
         } else {
-            for (Film i : filmStorage.getAllFilms()) {
+            for (Film film : filmStorage.getAllFilms()) {
                 bestFilm++;
-                if (i.getLikes().size() > bestFilm || topRated.size() <= 10) {
-                    topRated.add(i);
+                if (film.getLikes().size() > bestFilm || topRated.size() <= 10) {
+                    topRated.add(film);
                 }
             }
         }
@@ -65,16 +65,16 @@ public class FilmService {
     }
 
     public void deleteUserLike(String id, String userId) {
-        negativeId(id);
-        negativeId(userId);
-        for (Film i : filmStorage.getAllFilms()) {
-            if (i.getId() == Integer.parseInt(userId)) {
-                i.getLikes().remove(Long.valueOf(id));
+        checkId(id);
+        checkId(userId);
+        for (Film film : filmStorage.getAllFilms()) {
+            if (film.getId() == Integer.parseInt(userId)) {
+                film.getLikes().remove(Long.valueOf(id));
             }
         }
     }
 
-    private void negativeId(String id) {
+    private void checkId(String id) {
         if (Integer.parseInt(id) < 0) {
             throw new ObjectNotFoundException("Значение id не может быть отрицательным");
         }
@@ -83,8 +83,8 @@ public class FilmService {
     static class CompareFilms implements Comparator<Film> {
 
         @Override
-        public int compare(Film o1, Film o2) {
-            return Integer.compare(o2.getLikes().size(), o1.getLikes().size());
+        public int compare(Film film1, Film film2) {
+            return Integer.compare(film2.getLikes().size(), film1.getLikes().size());
         }
     }
 }

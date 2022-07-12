@@ -52,7 +52,7 @@ public class FilmController {
     @PutMapping("/{id}/like/{userId}")
     public void userLikesFilm(@PathVariable String id,
                               @PathVariable String userId) {
-        filmService.userLikesFilm(id, userId);
+        filmService.userMakesLike(id, userId);
     }
 
     @GetMapping("/popular")

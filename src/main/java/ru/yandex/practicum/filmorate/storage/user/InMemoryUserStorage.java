@@ -44,9 +44,9 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public void updateUser(@Valid @RequestBody User user) {
-        for (User i : users) {
-            if (i.getId() == user.getId()) {
-                users.remove(i);
+        for (User user1 : users) {
+            if (user1.getId() == user.getId()) {
+                users.remove(user1);
             } else {
                 throw new ObjectNotFoundException("Пользователя с таким id нет.");
             }

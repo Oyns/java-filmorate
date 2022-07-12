@@ -37,9 +37,9 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public void updateFilm(Film film) {
-        for (Film i : films) {
-            if (i.getId() == film.getId()) {
-                films.remove(i);
+        for (Film film1 : films) {
+            if (film1.getId() == film.getId()) {
+                films.remove(film1);
             } else {
                 throw new ObjectNotFoundException("Фильма с таким id нет");
             }

@@ -27,7 +27,7 @@ public class UserService {
 
 
     public User getUserData(String id) {
-        negativeId(id);
+        checkId(id);
         return userStorage.getAllUsers().stream()
                 .filter(user -> user.getId() == Integer.parseInt(id))
                 .findAny()
@@ -36,7 +36,7 @@ public class UserService {
 
 
     public Set<User> getAllFriends(String id) {
-        negativeId(id);
+        checkId(id);
         Set<User> techSet = new HashSet<>();
         Set<Long> longs = userStorage.getAllUsers().stream()
                 .filter(user -> user.getId() == Integer.parseInt(id))
@@ -88,8 +88,8 @@ public class UserService {
     }
 
     public User addFriend(String id, String friendId) {
-        negativeId(id);
-        negativeId(friendId);
+        checkId(id);
+        checkId(friendId);
         userStorage.getAllUsers().stream()
                 .filter(user -> user.getId() == Integer.parseInt(id))
                 .forEach(user -> user.getFriends().add(Long.parseLong(friendId)));
@@ -106,23 +106,23 @@ public class UserService {
 
 
     public void deleteFriend(String id, String friendId) {
-        negativeId(id);
-        negativeId(friendId);
-        for (User i : userStorage.getAllUsers()) {
-            if (i.getId() == Integer.parseInt(id)) {
-                i.getFriends().remove(Long.valueOf(friendId));
+        checkId(id);
+        checkId(friendId);
+        for (User user : userStorage.getAllUsers()) {
+            if (user.getId() == Integer.parseInt(id)) {
+                user.getFriends().remove(Long.valueOf(friendId));
             }
         }
 
-        for (User i : userStorage.getAllUsers()) {
-            if (i.getId() == Integer.parseInt(friendId)) {
-                i.getFriends().remove(Long.valueOf(id));
+        for (User user : userStorage.getAllUsers()) {
+            if (user.getId() == Integer.parseInt(friendId)) {
+                user.getFriends().remove(Long.valueOf(id));
             }
         }
     }
 
 
-    private void negativeId(String id) {
+    private void checkId(String id) {
         if (Integer.parseInt(id) < 0) {
             throw new ObjectNotFoundException("Значение id не может быть отрицательным");
         }
