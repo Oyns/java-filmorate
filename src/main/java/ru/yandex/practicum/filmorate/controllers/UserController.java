@@ -1,56 +1,75 @@
 package ru.yandex.practicum.filmorate.controllers;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import javax.validation.Valid;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
+
+@Validated
 @Slf4j
 @RestController
 @RequestMapping("/users")
 public class UserController {
-    private int id;
-    private final Set<User> users = new HashSet<>();
+
+    private final UserStorage userStorage;
+
+    private final UserService userService;
+
+    @Autowired
+    public UserController(UserStorage userStorage, UserService userService) {
+        this.userStorage = userStorage;
+        this.userService = userService;
+    }
 
     @GetMapping
     public Set<User> getAllUsers() {
-        return users;
+        return userStorage.getAllUsers();
     }
 
     @PostMapping
     public User createUser(@Valid @RequestBody User user) {
-        if (user.getId() < 0) {
-            throw new ValidationException("id не может быть отрицательным");
-        }
-        if (user.getName().isBlank()) {
-            user.setName(user.getLogin());
-        }
-        for (User i : users) {
-            if (i.getEmail().equals(user.getEmail())) {
-                throw new ValidationException("Пользователь с таким электронным адресом уже зарегестрирован");
-            }
-        }
-        id++;
-        user.setId(id);
-        users.add(user);
-
+        userStorage.createUser(user);
         return user;
     }
 
     @PutMapping
     public User updateUser(@Valid @RequestBody User user) {
-        for (User i : users) {
-            if (i.getId() == user.getId()) {
-                users.remove(i);
-            } else {
-                throw new ValidationException("Пользователя с таким id нет");
-            }
-        }
-        users.add(user);
+        userStorage.updateUser(user);
         return user;
+    }
+
+    @GetMapping("/{id}")
+    public User getUserData(@PathVariable String id) {
+        return userService.getUserData(id);
+    }
+
+    @GetMapping("/{id}/friends")
+    public Set<User> getAllFriends(@PathVariable String id) {
+        return userService.getAllFriends(id);
+    }
+
+    @GetMapping("/{id}/friends/common/{otherId}")
+    public List<User> getCommonFriends(@PathVariable String id, @PathVariable String otherId) {
+        return userService.getCommonFriends(id, otherId);
+    }
+
+    @PutMapping("/{id}/friends/{friendId}")
+    public User addFriend(@RequestBody @PathVariable String id,
+                          @PathVariable String friendId) {
+        return userService.addFriend(id, friendId);
+    }
+
+    @DeleteMapping("/{id}/friends/{friendId}")
+    public void deleteFriend(@PathVariable String id,
+                             @PathVariable String friendId) {
+        userService.deleteFriend(id, friendId);
     }
 }

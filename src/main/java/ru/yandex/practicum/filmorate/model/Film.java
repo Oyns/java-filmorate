@@ -5,6 +5,8 @@ import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.*;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @NotNull
@@ -17,4 +19,5 @@ public class Film {
     private LocalDate releaseDate;
     @Positive(message = "Продолжительность фильма должна быть положительной")
     private long duration;
+    private Set<Long> likes = new HashSet<>();
 }
